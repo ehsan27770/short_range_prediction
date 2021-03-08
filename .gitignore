@@ -4,9 +4,11 @@ IMG_8854.JPG
 IMG_8855.JPG
 IMG_8856.JPG
 IMG_8857.JPG
+model_checkpoint.h5
 __pycache__/
 cleanData/
 lightning_data/
 rawData.zip
 rawData/
+lightning_days/
 

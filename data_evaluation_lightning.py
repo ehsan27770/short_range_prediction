@@ -5,7 +5,10 @@ from benford import benford
 import matplotlib.pyplot as plt
 %load_ext autoreload
 %autoreload 2
+
 #%%
+
+
 dfs = [pd.read_csv(r"./lightning_data/{}_data.txt".format(i),sep=';',low_memory=False) for i in range(2007,2021)]
 
 
@@ -16,8 +19,6 @@ data = data.drop_duplicates()
 
 #clean_data.to_csv("./lightning_data/data.csv",index=False)
 
-# %% markdown
-# clean Data
 
 # %%
 for col in list(data.columns)[2:]:
