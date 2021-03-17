@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
 from sklearn.model_selection import train_test_split
+
 # %%
+
 data = pd.read_csv('./cleanData/all.csv',index_col='time',parse_dates=['time'],infer_datetime_format=True)
 delivery_note = pd.read_csv('./rawData/delivery_note.csv',sep='\t')
 delivery_note = delivery_note.set_index(['id'])
@@ -67,13 +69,12 @@ def show_heatmap(data,method='pearson'):
     plt.title("Feature Correlation Heatmap", fontsize=14)
     plt.show()
 
-
+# %%
 show_heatmap(data,'pearson')
-
+# %%
 show_heatmap(data,'kendall')
-
+# %%
 show_heatmap(data,'spearman')
-
 # %%
 
 #train,test = train_test_split(data)
@@ -86,7 +87,7 @@ show_heatmap(data,'spearman')
 
 split_fraction = 0.715
 train_split = int(split_fraction * int(data.shape[0]))
-step = 6
+step = 6 # 6 * 10min = 1 hour
 
 past = 720
 future = 72
@@ -94,7 +95,9 @@ learning_rate = 0.001
 batch_size = 256
 epochs = 10
 
-
+#sequence_length = int(past / step)
+sequence_length = 9 # 9 * 10min = 1.5 hour
+# %%
 def normalize(data, train_split):
     data_mean = data[:train_split].mean(axis=0)
     data_std = data[:train_split].std(axis=0)
@@ -102,7 +105,11 @@ def normalize(data, train_split):
 data
 #data_ = pd.DataFrame(normalize(data.values,train_split),columns=data.columns)
 data_ = pd.DataFrame(normalize(data.values,train_split))
+data_['t'] = data['onoff']
+
 data_
+# %%
+
 #train_split = 10
 train_data = data_.loc[0:train_split-1]
 val_data = data_.loc[train_split:]
@@ -114,14 +121,14 @@ X_train = train_data[[i for i in range(12)]].values
 y_train = train_data[[14]]
 X_train.shape
 y_train.shape
-sequence_length = int(past / step)
 
-dataset_train = keras.preprocessing.timeseries_dataset_from_array(X_train,y_train,sequence_length=sequence_length,batch_size=batch_size)
+
+dataset_train = keras.preprocessing.timeseries_dataset_from_array(X_train,y_train,sequence_length=sequence_length,batch_size=batch_size,shuffle=True)
 # %%
 
 X_val = val_data[[i for i in range(12)]].values
 y_val = val_data[[14]]
-dataset_val = keras.preprocessing.timeseries_dataset_from_array(X_val,y_val,sequence_length=sequence_length,batch_size=batch_size)
+dataset_val = keras.preprocessing.timeseries_dataset_from_array(X_val,y_val,sequence_length=sequence_length,batch_size=batch_size,shuffle=True)
 # %%
 
 for batch in dataset_train.take(1):
@@ -129,7 +136,7 @@ for batch in dataset_train.take(1):
 
 print("Input shape:", inputs.numpy().shape)
 print("Target shape:", targets.numpy().shape)
-
+targets
 # %%
 
 inputs = keras.layers.Input(shape=(inputs.shape[1], inputs.shape[2]))
@@ -137,6 +144,8 @@ lstm_out = keras.layers.LSTM(32)(inputs)
 outputs = keras.layers.Dense(1)(lstm_out)
 
 model = keras.Model(inputs=inputs, outputs=outputs)
+
+
 model.compile(optimizer=keras.optimizers.Adam(learning_rate=learning_rate), loss="mse")
 model.summary()
 
