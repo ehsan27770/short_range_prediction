@@ -94,6 +94,12 @@ df['amp_neg'] = df['amplitude'].apply(find_neg)
 df = df.drop(columns='amplitude')
 df
 
+#%%
+benford(list(df['amp_abs']),'')
+# %%
+benford(list(df['amp_pos']),'')
+# %%
+benford(list(df['amp_neg']),'')
 # %%
 benford(list(df['amp_abs'].groupby([df.index.year,df.index.dayofyear]).count()),'all lightnings types in day')
 # %%
