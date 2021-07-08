@@ -84,5 +84,19 @@ for i,df in enumerate([df1,df2,df3]):
     ax = benford(list(df['amp_neg'].groupby([df.index.year,df.index.dayofyear]).count()),'all lightnings types in day')
 # %%
 a = df1['amp_abs'].groupby([df1.index.year,df1.index.dayofyear]).count()
-a.max()
+a.median()
+a.mean()
+a.hist(bins=100)
+a
 # %%
+for i,df in enumerate([df1,df2,df3]):
+    ax = benford(df['amp_abs'],'absolute amplitude')
+# %%
+for i,df in enumerate([df1,df2,df3]):
+    ax = benford(df['amp_pos'],'positive amplitude')
+# %%
+for i,df in enumerate([df1,df2,df3]):
+    ax = benford(df['amp_neg'],'negative amplitude')
+# %%
+for i,df in enumerate([df1,df2,df3]):
+    ax = benford(df['nano'],'duration')
