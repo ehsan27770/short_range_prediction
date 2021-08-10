@@ -29,74 +29,115 @@ df3['amp_abs'] = np.abs(df3['amplitude'])
 df3['amp_pos'] = df3['amplitude'].apply(find_pos)
 df3['amp_neg'] = df3['amplitude'].apply(find_neg)
 df3
+# %%
+# Effect of lightning type
+for i,df in zip(['2000-2004','2010-2014','2016-2020'],[df1,df2,df3]):
+    #ax = benford(list(df['amp_abs'].groupby([df.index.year,df.index.dayofyear]).count()),f'all lightnings types in day {i}')
+    f = benford(list(df['amp_abs'].groupby(df.index.floor('d')).count()),f'all lightnings types in day {i}')
+    f.savefig(f'all_{i}.png',dpi=f.dpi,bbox_inches='tight',pad_inches=.5)
+# %%
+for i,df in zip(['2000-2004','2010-2014','2016-2020'],[df1,df2,df3]):
+    f = benford(list(df['amp_pos'].groupby(df.index.floor('d')).count()),f'positive lightnings types in day {i}')
+    f.savefig(f'pos_{i}.png',dpi=f.dpi,bbox_inches='tight',pad_inches=.5)
+# %%
+for i,df in zip(['2000-2004','2010-2014','2016-2020'],[df1,df2,df3]):
+    f = benford(list(df['amp_neg'].groupby(df.index.floor('d')).count()),f'negative lightnings types in day {i}')
+    f.savefig(f'neg_{i}.png',dpi=f.dpi,bbox_inches='tight',pad_inches=.5)
+
+
+
 
 # %%
-for i,df in enumerate([df1,df2,df3]):
-    ax = benford(list(df['amp_abs'].groupby([df.index.year,df.index.dayofyear]).count()),'all lightnings types in day')
+# Effect of counting period
+for i,df in zip(['2000-2004','2010-2014','2016-2020'],[df1,df2,df3]):
+    f = benford(list(df['amp_abs'].groupby(pd.Grouper(freq='5D')).count()),f'all cloud-to-ground in day {i}')
 # %%
-for i,df in enumerate([df1,df2,df3]):
-    list_of_data = list(df['amp_abs'].groupby([df.index.year,df.index.dayofyear]).count())
-    perturbed = []
-    rhos = np.arange(0.9,12,0.01)
-    for rho in rhos:
-        jsd, kld = normalize(list_of_data,rho)
-        perturbed.append(jsd)
+for freq in ['1H','12H','1D','3D','7D','1M']:
+    df = df1
+    f = benford(list(df['amp_abs'].groupby(pd.Grouper(freq=freq)).count()),f'all lightning in {freq}')
+    f.savefig(f'{freq}.png',dpi=f.dpi,bbox_inches='tight',pad_inches=.5)
 
-    plt.figure(figsize=(15,10))
-    plt.plot(rhos, perturbed)
-# %%
-for i,df in enumerate([df1,df2,df3]):
-    benford(list(df['amp_pos'].groupby([df.index.year,df.index.dayofyear]).count()),'positive lightnings types in day')
-# %%
-for i,df in enumerate([df1,df2,df3]):
-    list_of_data = list(df['amp_pos'].groupby([df.index.year,df.index.dayofyear]).count())
-    perturbed = []
-    rhos = np.arange(0.9,12,0.01)
-    for rho in rhos:
-        jsd, kld = normalize(list_of_data,rho)
-        perturbed.append(jsd)
 
-    plt.figure(figsize=(15,10))
-    plt.plot(rhos, perturbed)
-# %%
-for i,df in enumerate([df1,df2,df3]):
-    benford(list(df['amp_neg'].groupby([df.index.year,df.index.dayofyear]).count()),'negative lightnings types in day')
-# %%
-for i,df in enumerate([df1,df2,df3]):
-    list_of_data = list(df['amp_neg'].groupby([df.index.year,df.index.dayofyear]).count())
-    perturbed = []
-    rhos = np.arange(0.9,12,0.01)
-    for rho in rhos:
-        jsd, kld = normalize(list_of_data,rho)
-        perturbed.append(jsd)
 
-    plt.figure(figsize=(15,10))
-    plt.plot(rhos, perturbed)
+
 # %%
-for i,df in enumerate([df1,df2,df3]):
+# Effect of lightning destination
+for i,df in zip(['2000-2004','2010-2014','2016-2020'],[df1,df2,df3]):
     df = df[df['icloud']=='f']
-    ax = benford(list(df['amp_pos'].groupby([df.index.year,df.index.dayofyear]).count()),'all lightnings types in day')
-
-
+    f = benford(list(df['amp_abs'].groupby(df.index.floor('d')).count()),f'all cloud-to-ground in day {i}')
+    f.savefig(f'all_{i}.png',dpi=f.dpi,bbox_inches='tight',pad_inches=.5)
 # %%
-for i,df in enumerate([df1,df2,df3]):
+for i,df in zip(['2000-2004','2010-2014','2016-2020'],[df1,df2,df3]):
     df = df[df['icloud']=='f']
-    ax = benford(list(df['amp_neg'].groupby([df.index.year,df.index.dayofyear]).count()),'all lightnings types in day')
+    f = benford(list(df['amp_pos'].groupby(df.index.floor('d')).count()),f'positive cloud-to-ground in day {i}')
+    f.savefig(f'pos_{i}.png',dpi=f.dpi,bbox_inches='tight',pad_inches=.5)
 # %%
-a = df1['amp_abs'].groupby([df1.index.year,df1.index.dayofyear]).count()
-a.median()
-a.mean()
-a.hist(bins=100)
-a
+for i,df in zip(['2000-2004','2010-2014','2016-2020'],[df1,df2,df3]):
+    df = df[df['icloud']=='f']
+    f = benford(list(df['amp_neg'].groupby(df.index.floor('d')).count()),f'negative cloud-to-ground in day {i}')
+    f.savefig(f'neg_{i}.png',dpi=f.dpi,bbox_inches='tight',pad_inches=.5)
+# %%
+for i,df in zip(['2000-2004','2010-2014','2016-2020'],[df1,df2,df3]):
+    df = df[df['icloud']=='t']
+    f = benford(list(df['amp_abs'].groupby(df.index.floor('d')).count()),f'all cloud-to-ground in day {i}')
+    f.savefig(f'all_{i}.png',dpi=f.dpi,bbox_inches='tight',pad_inches=.5)
+# %%
+for i,df in zip(['2000-2004','2010-2014','2016-2020'],[df1,df2,df3]):
+    df = df[df['icloud']=='t']
+    f = benford(list(df['amp_pos'].groupby(df.index.floor('d')).count()),f'positive cloud-to-ground in day {i}')
+    f.savefig(f'pos_{i}.png',dpi=f.dpi,bbox_inches='tight',pad_inches=.5)
+# %%
+for i,df in zip(['2000-2004','2010-2014','2016-2020'],[df1,df2,df3]):
+    df = df[df['icloud']=='t']
+    f = benford(list(df['amp_neg'].groupby(df.index.floor('d')).count()),f'negative cloud-to-ground in day {i}')
+    f.savefig(f'neg_{i}.png',dpi=f.dpi,bbox_inches='tight',pad_inches=.5)
+
+
+# %%
+# Effect of multiplication
+for i,df in enumerate([df1,df2,df3]):
+    list_of_data = list(df['amp_abs'].groupby(df.index.floor('d')).count())
+    perturbed = []
+    rhos = np.arange(0.9,12,0.01)
+    for rho in rhos:
+        jsd, kld = normalize(list_of_data,rho)
+        perturbed.append(jsd)
+
+    plt.figure(figsize=(15,10))
+    plt.plot(rhos, perturbed)
 # %%
 for i,df in enumerate([df1,df2,df3]):
-    ax = benford(df['amp_abs'],'absolute amplitude')
+    list_of_data = list(df['amp_pos'].groupby(df.index.floor('d')).count())
+    perturbed = []
+    rhos = np.arange(0.9,12,0.01)
+    for rho in rhos:
+        jsd, kld = normalize(list_of_data,rho)
+        perturbed.append(jsd)
+
+    plt.figure(figsize=(15,10))
+    plt.plot(rhos, perturbed)
+
 # %%
 for i,df in enumerate([df1,df2,df3]):
-    ax = benford(df['amp_pos'],'positive amplitude')
+    list_of_data = list(df['amp_neg'].groupby(df.index.floor('d')).count())
+    perturbed = []
+    rhos = np.arange(0.9,12,0.01)
+    for rho in rhos:
+        jsd, kld = normalize(list_of_data,rho)
+        perturbed.append(jsd)
+
+    plt.figure(figsize=(15,10))
+    plt.plot(rhos, perturbed)
+
 # %%
-for i,df in enumerate([df1,df2,df3]):
-    ax = benford(df['amp_neg'],'negative amplitude')
+for i,df in zip(['2000-2004','2010-2014','2016-2020'],[df1,df2,df3]):
+    f = benford(df['amp_abs'],f'absolute amplitude {i}')
+    f.savefig(f'all_{i}.png',dpi=f.dpi,bbox_inches='tight',pad_inches=.5)
 # %%
-for i,df in enumerate([df1,df2,df3]):
-    ax = benford(df['nano'],'duration')
+for i,df in zip(['2000-2004','2010-2014','2016-2020'],[df1,df2,df3]):
+    f = benford(df['amp_pos'],f'positive amplitude {i}')
+    f.savefig(f'pos_{i}.png',dpi=f.dpi,bbox_inches='tight',pad_inches=.5)
+# %%
+for i,df in zip(['2000-2004','2010-2014','2016-2020'],[df1,df2,df3]):
+    f = benford(df['amp_neg'],f'negative amplitude {i}')
+    f.savefig(f'neg_{i}.png',dpi=f.dpi,bbox_inches='tight',pad_inches=.5)

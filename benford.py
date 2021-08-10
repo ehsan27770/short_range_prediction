@@ -42,8 +42,8 @@ def benford(numbers,title):
     hd = Hellinger_distance(y,t)
     l = lambda_distance(y,t,0.5)
     #plt.title(title + '\n\nmse={}\nmae={},\nJSD={}\nKSD={}\nKLD={}\ncsd={}\nBD={}\nHD={}\nlambda={}'.format(mse,mae,jsd,ksd,kld,csd,bd,hd,l))
-    plt.title(title + f'\n\nJSD={jsd}')
-    return
+    plt.title(title + f'\n\nJSD={jsd}\n{min(numbers)}-{max(numbers)}')
+    return f
 
 def normalize(numbers,rho=None):
     dist = {1:0,2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0}
