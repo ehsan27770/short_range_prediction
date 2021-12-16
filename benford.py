@@ -48,8 +48,8 @@ def benford(numbers,title,limit=None,ax=None,rho=None):
 
     jsd = jensen_shannon_distance(y,t)
 
-    kld = Kullback_Leibler_divergence(y,t)
-    ax.title.set_text(title + f'\nJSD={jsd:.3f}\nrange: {inf}-{sup}')
+    emd = earth_movers_distance(y,t)
+    ax.title.set_text(title + f'\nJSD={jsd:.3f}\nWD={emd:.3f}\nrange: {inf}-{sup}')
     #ax.title.set_text(title + f'\nJSD={np.exp(jsd):.3f}\nrange: {inf}-{sup}')
     return
 
@@ -67,9 +67,9 @@ def benford(numbers,title,limit=None,ax=None,rho=None):
 def distance(numbers,rho=None,limit=None):#previous name was normalize
     x, y, t, inf, sup, num = counter(numbers,rho=rho,limit=limit)
     jsd = jensen_shannon_distance(y,t)
-    kld = Kullback_Leibler_divergence(y,t)
+    emd = earth_movers_distance(y,t)
 
-    return jsd, kld, inf, sup, num
+    return jsd, emd, inf, sup, num
 
 
 def jensen_shannon_distance(p,q):
@@ -92,6 +92,13 @@ def jensen_shannon_distance(p,q):
     distance = np.sqrt(divergence)
 
     return distance
+
+
+def earth_movers_distance(p,q):
+    dist = [i for i in range(1,10)]
+    return scipy.stats.wasserstein_distance(dist,dist,p,q)
+
+
 
 def Kolmogorov_Smirnov_distance(p,q):
     p = p.cumsum()
@@ -146,4 +153,4 @@ if __name__ == "__main__":
     plt.xlabel('first digit')
     ax.set_ylabel('probability')
     plt.title('Benford Law distribution')
-    plt.savefig('benford.png',dpi=f.dpi,bbox_inches='tight',pad_inches=.5)
+    plt.savefig('saved_images/benford.png',dpi=300,bbox_inches='tight')
