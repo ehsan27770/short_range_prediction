@@ -37,6 +37,15 @@ def counter(numbers,rho=None,limit=None):
     return x, y, t, min(numbers_modified), max(numbers_modified), len(numbers_modified)
 
 def benford(numbers,title,limit=None,ax=None,rho=None):
+    '''
+    numbers: list of numbers
+    title: title of the plot
+    limit: limit of the numbers
+    ax: axis of the plot
+    rho: scaling factor
+    TODO: add more distance metrics (MSE,, sum of squares deviation, multiply distance with ideal benford as a weight, divide distances by the ideal benford for regularization)
+    TODO: add more statistics (number of numbers list, range and percentile range 10%, 90%)
+    '''
     x, y, t, inf, sup, num= counter(numbers,limit=limit,rho=rho)
     if ax is None:
         f, ax = plt.subplots(figsize = (10,5))
@@ -49,7 +58,7 @@ def benford(numbers,title,limit=None,ax=None,rho=None):
     jsd = jensen_shannon_distance(y,t)
 
     emd = earth_movers_distance(y,t)
-    ax.title.set_text(title + f'\nJSD={jsd:.3f}\nWD={emd:.3f}\nrange: {inf}-{sup}')
+    ax.title.set_text(title + f'\nJSD={jsd:.3f}\nWD={emd:.3f}\nrange: {inf} \u2013 {sup}')
     #ax.title.set_text(title + f'\nJSD={np.exp(jsd):.3f}\nrange: {inf}-{sup}')
     return
 
@@ -146,11 +155,14 @@ if __name__ == "__main__":
 
     #ax.legend(handles=[l1], loc='best')
     for i, v in enumerate(y):
-        ax.text(i + 0.650, v + .003, f'{100*v:.2f}%', color='blue', fontweight='bold')
-    l1 = ax.bar(x,y,label='real data')
-    plt.rcParams['font.size'] = 15
+        ax.text(i + 0.650, v + .003, f'{100*v:.2f}%', color='black', fontweight='bold')
+    l1 = ax.bar(x,y,label='real data',color='grey')
+    plt.rcParams['font.size'] = 12
     plt.xticks(x)
     plt.xlabel('first digit')
-    ax.set_ylabel('probability')
-    plt.title('Benford Law distribution')
-    plt.savefig('saved_images/benford.png',dpi=300,bbox_inches='tight')
+    ax.set_ylabel('probability of the first digit')
+    plt.title('Distribution of the first digits according to Benford\'s law')
+    #plt.savefig('saved_images/benford.png',dpi=300,bbox_inches='tight')
+    plt.savefig('saved_images/benford_new.png',dpi=300,bbox_inches='tight')
+
+# %%
